@@ -899,7 +899,8 @@ DispatchResult dispatchCallSymbol(const GlobalState &gs, const DispatchArgs &arg
             if (!hasKwargs) {
                 ait += numKwargs;
             }
-        } else if (kwSplatIsHash) {
+        } else if (kwSplatIsHash &&
+                   !absl::c_any_of(data->arguments(), [](const auto &arg) { return arg.flags.isKeyword && arg.flags.isRepeated; })) {
             if (auto e = gs.beginError(args.callLoc(), errors::Infer::UntypedSplat)) {
                 e.setHeader("Passing a hash where the specific keys are unknown to a method taking keyword "
                             "arguments");
